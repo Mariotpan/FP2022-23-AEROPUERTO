@@ -403,6 +403,9 @@ public class aeropuerto {
 	/*obtiene alguna compañía que tenga todos sus vuelos con retraso.*/
 	public String getCompañiaTodosVuelosConRetraso() {
 		return vuelos.stream()
-					 
+					 .filter(x->x.diferenciaEnMinutos()<0)
+					 .map(Vuelo::getCompania)
+					 .findAny()
+					 .get();
 	}
 }
