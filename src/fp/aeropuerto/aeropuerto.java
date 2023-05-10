@@ -333,6 +333,20 @@ public class aeropuerto {
 											 x->x.size()))));
 	}
 	
+	/*obtiene la compañía con más operaciones de vuelo del aeropuerto.*/
+	public String getCompañiaMasOperaciones() {
+		Map<String, Long> mapa = vuelos.stream()	
+					 				   .collect(Collectors.groupingBy(Vuelo::getCompania, Collectors.counting()));
+		
+		Comparator<Map.Entry<String, Long>> cmp = Comparator.comparing(Entry::getValue);
+		return mapa.entrySet().stream()
+				.sorted(cmp.reversed())
+				.findFirst()
+				.get()
+				.getKey();
+		
+	}
+	
 	/*obtiene la  SEGUNDA compañía con más operaciones de vuelo del aeropuerto.*/
 	public String getSEGUNDACompañiaMasOperaciones() {
 		Map<String, Long> mapa = vuelos.stream()	
@@ -348,5 +362,47 @@ public class aeropuerto {
 				.get()
 				.getKey();
 				
+	}
+	
+	/*obtiene las compañías que operan al menos n vuelos.*/
+	public Set<String> getCompañiasConAlMenosNVuelos(Integer n){
+		
+		Map<String, Long> mapa = vuelos.stream()
+				.collect(Collectors.groupingBy(Vuelo::getCompania, Collectors.counting()));
+		
+		Comparator<Map.Entry<String, Long>> cmp = Comparator.comparing(Entry::getValue);
+		return mapa.entrySet().stream()
+				.filter(x->x.getValue()>n)
+				.map(x->x.getKey())
+				.collect(Collectors.toSet());
+	}
+	
+	/*obtiene las n compañías con más vuelos con retraso, de mayor a menor.*/
+	public List<String> getCompañiasMasRetraso(Integer n){
+		Map<String, Long> mapa = vuelos.stream()
+				.filter(x->x.diferenciaEnMinutos()<0)
+				.collect(Collectors.groupingBy(Vuelo::getCompania, Collectors.counting()));
+		
+		Comparator<Map.Entry<String, Long>> cmp = Comparator.comparing(Entry::getValue);
+		return mapa.entrySet().stream()
+				.sorted(cmp.reversed())
+				.limit(n)
+				.map(x->x.getKey())
+				.collect(Collectors.toList());
+				
+	}
+	
+	/*obtiene algún vuelo que use un modelo de avión dado*/
+	public Vuelo getVueloConModelo(String modelo) {
+		return vuelos.stream()
+					 .filter(x->x.getModeloAvion().equals(modelo))
+					 .findAny()
+					 .get();
+	}
+	
+	/*obtiene alguna compañía que tenga todos sus vuelos con retraso.*/
+	public String getCompañiaTodosVuelosConRetraso() {
+		return vuelos.stream()
+					 
 	}
 }
